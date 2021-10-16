@@ -5,10 +5,10 @@ pipeline{
         maven 'maven'
     }
     environment{
-        ArtifactId = readMavenPom().getArtifactId()
-        Version = readMavenPom().getVersion()
-        Name = readMavenPom().getName()
-        GroupId = readMavenPom().getGroupId()
+       ArtifactId = readMavenPom().getArtifactId()
+       Version = readMavenPom().getVersion()
+       Name = readMavenPom().getName()
+       GroupId = readMavenPom().getGroupId()
     }
 
     stages {
@@ -32,20 +32,36 @@ pipeline{
         
         // Stage 3: Publish the artefacts to Nexus
         stage ('Publish to Nexus'){
-            steps(){
-                nexusArtifactUploader artifacts: [[artifactId: 'FabricioDevOpsLab', classifier: '', file: 'target/FabricioDevOpsLab-0.0.9-SNAPSHOT.war', type: 'war']], credentialsId: 'Nexus', groupId: 'com.fabriciodevopslab', nexusUrl: '172.20.10.163:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'FabricioDevOpsLab-SNAPSHOT', version: '0.0.9-SNAPSHOT'
+            steps {
+                script {
+
+                def NexusRepo = Version.endsWith("SNAPSHOT") ? "FabricioDevOpsLab-SNAPSHOT" : "FabricioDevOpsLab-RELEASE"
+
+                nexusArtifactUploader artifacts: 
+                [[artifactId: "${ArtifactId}", 
+                classifier: '', 
+                file: "target/${ArtifactId}-${Version}.war", 
+                type: 'war']], 
+                credentialsId: 'Nexus', 
+                groupId: "${GroupId}", 
+                nexusUrl: '172.20.10.163:8081', 
+                nexusVersion: 'nexus3', 
+                protocol: 'http', 
+                repository: "${NexusRepo}", 
+                version: "${Version}"
+             }
             }
         }
 
-        // Stage 4: Print some informations
-        stage ('Print environment variables') {
-            steps (){
-                echo "Artifact ID is '{$ArtifactId}'"
-                echo "Version is '{$Version}'"
-                echo "Group ID is '{$GroupId}'"
-                echo "Name is '{$Name}'"
-            }
-        }
+        // Stage 4 : Print some information
+        stage ('Print Environment variables'){
+                    steps {
+                        echo "Artifact ID is '${ArtifactId}'"
+                        echo "Version is '${Version}'"
+                        echo "GroupID is '${GroupId}'"
+                        echo "Name is '${Name}'"
+                    }
+                }
 
         // Stage3 : Publish the source code to Sonarqube
         stage ('Sonarqube Analysis'){
