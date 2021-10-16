@@ -27,7 +27,7 @@ pipeline{
         // Stage 3: Publish the artefacts to Nexus
         stage ('Publish to Nexus'){
             steps(){
-                nexusArtifactUploader artifacts: [[artifactId: 'FabricioDevOpsLab', classifier: '', file: 'target/FabricioDevOpsLab-0.0.10-SNAPHOT.war', type: 'war']], credentialsId: 'Nexus', groupId: 'com.fabriciodevopslab', nexusUrl: '172.20.10.163:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'FabricioDevOpsLab-SNAPSHOT', version: '0.0.10-SNAPHOT'
+                nexusArtifactUploader artifacts: [[artifactId: 'FabricioDevOpsLab', classifier: '', file: 'target/FabricioDevOpsLab-0.1.0-SNAPHOT.war', type: 'war']], credentialsId: 'Nexus', groupId: 'com.fabriciodevopslab', nexusUrl: '172.20.10.163:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'FabricioDevOpsLab-SNAPSHOT', version: '0.1.0-SNAPHOT'
             }
         }
 
