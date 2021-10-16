@@ -4,6 +4,11 @@ pipeline{
     tools {
         maven 'maven'
     }
+    environment{
+        ArtifactId = readMavenpom().getArtifactId()
+        Version = readMavenpom().getVersion()
+        Name = readMavenpom().getName()
+    }
 
     stages {
         // Specify various stage with in stages
@@ -28,6 +33,16 @@ pipeline{
         stage ('Publish to Nexus'){
             steps(){
                 nexusArtifactUploader artifacts: [[artifactId: 'FabricioDevOpsLab', classifier: '', file: 'target/FabricioDevOpsLab-0.0.9-SNAPSHOT.war', type: 'war']], credentialsId: 'Nexus', groupId: 'com.fabriciodevopslab', nexusUrl: '172.20.10.163:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'FabricioDevOpsLab-SNAPSHOT', version: '0.0.9-SNAPSHOT'
+            }
+        }
+
+        // Stage 4: Print some informations
+        stage ('Print environment variables') {
+            steps (){
+                echo "Artifact ID is '{$ArtifactId}'"
+                echo "Version is '{$Version}'"
+                echo "Group ID is '{}'"
+                echo "Name is '{$Name}'"
             }
         }
 
